@@ -4,6 +4,10 @@ Manage your Windows Active Directory from Claude Code. Unlock accounts, reset pa
 
 Powered by [AID Helpdesk](https://web-production-01ecc.up.railway.app).
 
+## How it works
+
+You are the AI. The plugin gives Claude Code a reference card of available AD actions and their endpoints. Claude Code reads your plain-English request, picks the right action, calls the endpoint directly, and shows you the result. No separate AI runs on the backend — just a direct queue to your Windows agent.
+
 ## Prerequisites
 
 - An AID Helpdesk account — [sign up free](https://web-production-01ecc.up.railway.app/signup)
@@ -30,7 +34,7 @@ Then verify your connection:
 | Skill | Description |
 |---|---|
 | `/aid:setup` | Verify your API key and test the connection |
-| `/aid:chat <message>` | Talk to your AD assistant in plain English |
+| `/aid:chat <message>` | Perform any AD action in plain English |
 | `/aid:tickets [status]` | List your support ticket queue |
 | `/aid:users [search]` | Look up Active Directory users |
 
@@ -41,15 +45,10 @@ Then verify your connection:
 /aid:chat unlock john.smith
 /aid:chat reset sarah.jones's password
 /aid:chat add mike.taylor to the IT-Admins group
+/aid:chat show me all disabled accounts in the Sales OU
 /aid:tickets open
 /aid:users jane
 ```
-
-## How it works
-
-The `/aid:chat` skill sends your message to the AID Helpdesk AI, which decides what AD action to take, queues it through your Windows Agent, and returns the result. Destructive actions (disable account, bulk changes) require a confirmation code — the AI will prompt you.
-
-Every action is logged to your AID Helpdesk audit trail.
 
 ## Self-hosting
 

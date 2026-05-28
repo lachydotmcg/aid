@@ -1,25 +1,123 @@
 ---
-description: Talk to your AID Helpdesk AI to manage Active Directory in plain English. Unlock accounts, reset passwords, look up users, manage groups — all without leaving Claude Code.
+description: Manage Active Directory in plain English. Unlock accounts, reset passwords, look up users, manage groups — all without leaving Claude Code. You are the AI — just pick the right endpoint and call it.
 ---
 
 # AID Helpdesk — Chat
 
-The user wants to perform an Active Directory action or ask a question about their environment.
+The user wants to perform an Active Directory action or ask about their environment.  
 Their request is: "$ARGUMENTS"
 
-Send their message to the AID Helpdesk AI by running:
-```bash
-curl -s -X POST "$AID_URL/api/v1/chat" \
-  -H "X-API-Key: $AID_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "{\"message\": $(echo "$ARGUMENTS" | jq -Rs .)}"
-```
+You are the intelligence layer. Based on the request, pick the right action from the table below, build the `curl` call, run it, and display the result. No AI runs on the backend — it's a direct queue to the Windows agent.
 
 If `AID_API_KEY` or `AID_URL` are not set, tell the user to run `/aid:setup` first.
 
-Parse the JSON response:
-- If `success` is true, display the `reply` field as-is. It may include action results, user details, or a conversational response.
-- If `success` is false, show the `message` field and suggest the user check their connection with `/aid:setup`.
-- If the response mentions a pending action that requires confirmation (destructive operations), relay that to the user clearly.
+---
 
-Keep your own commentary minimal — the AID Helpdesk AI's reply is the primary output.
+## Endpoint
+
+```
+POST $AID_URL/api/v1/actions/<action>
+X-API-Key: $AID_API_KEY
+Content-Type: application/json
+Body: { "param": "value", ... }
+```
+
+---
+
+## Action reference
+
+### Read — user queries
+| Action | Required params | Optional params | Description |
+|--------|----------------|-----------------|-------------|
+| `get_user_info` | `username` | | Full details: status, groups, OU, last logon |
+| `search_users` | `query` | | Search by name or username (partial match) |
+| `list_users` | | | All domain users |
+| `list_locked_accounts` | | | All currently locked accounts |
+| `list_expired_passwords` | | | Accounts with expired passwords |
+| `list_group_memberships` | `username` | | All groups a user belongs to |
+| `list_users_in_ou` | `ou` | | All users in a specific OU |
+| `get_stats` | | | Domain summary (totals, locked count, expired count) |
+
+### Read — group & OU queries
+| Action | Required params | Optional params | Description |
+|--------|----------------|-----------------|-------------|
+| `list_groups` | | | All AD groups |
+| `search_groups` | `query` | | Search groups by name |
+| `get_group_members` | `group` | | Members of a group |
+| `list_ous` | | | All Organisational Units |
+
+### Write — account actions (reversible)
+| Action | Required params | Optional params | Description |
+|--------|----------------|-----------------|-------------|
+| `unlock_account` | `username` | | Unlock a locked-out account |
+| `enable_account` | `username` | | Re-enable a disabled account |
+| `reset_password` | `username`, `password` | | Reset password; user must change at logon |
+| `force_password_change` | `username` | | Force password change at next logon |
+| `set_password_never_expires` | `username` | `enabled` (true/false) | Toggle password expiry |
+| `add_to_group` | `username`, `group` | | Add user to a group |
+
+### Destructive — confirm before calling
+| Action | Required params | Optional params | Description |
+|--------|----------------|-----------------|-------------|
+| `disable_account` | `username` | | Disable an account |
+| `remove_from_group` | `username`, `group` | | Remove user from a group |
+| `create_user` | `first_name`, `last_name`, `username` | `ou` | Create a new AD account |
+| `move_user` | `username`, `ou` | | Move user to a different OU |
+| `create_ou` | `name` | `parent_ou` | Create a new Organisational Unit |
+
+---
+
+## Examples
+
+Unlock an account:
+```bash
+curl -s -X POST "$AID_URL/api/v1/actions/unlock_account" \
+  -H "X-API-Key: $AID_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"username": "john.smith"}'
+```
+
+Reset a password (generate a secure one if the user didn't provide one):
+```bash
+curl -s -X POST "$AID_URL/api/v1/actions/reset_password" \
+  -H "X-API-Key: $AID_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"username": "john.smith", "password": "Temp@38271!"}'
+```
+
+Look up a user:
+```bash
+curl -s -X POST "$AID_URL/api/v1/actions/get_user_info" \
+  -H "X-API-Key: $AID_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"username": "john.smith"}'
+```
+
+Who's locked out right now:
+```bash
+curl -s -X POST "$AID_URL/api/v1/actions/list_locked_accounts" \
+  -H "X-API-Key: $AID_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+---
+
+## Displaying results
+
+Parse the JSON response:
+- `success: true` — show `message` and format `data` clearly
+- `success: false` — show `message`; if it mentions the agent, suggest checking the Windows agent is running
+- HTTP 504 — agent offline; tell the user to check the Windows agent service
+
+For user data, display:
+- **Name** — display name
+- **Username** — sAMAccountName  
+- **Status** — 🔒 Locked / ✅ Active / ❌ Disabled / ⏰ Password expired (combine flags if multiple)
+- **Groups** — comma-separated or bullet list
+- **OU** — organisational unit path
+- **Last logon** — if available
+
+For destructive actions, confirm with the user before calling. State clearly what will happen.
+
+If the request is ambiguous (e.g. "unlock john" matches multiple users), use `search_users` first, then confirm which account to act on.
