@@ -1,0 +1,12 @@
+{
+  "name": "aid",
+  "description": "Manage your Windows Active Directory from Claude Code. Look up users, unlock accounts, reset passwords, view support tickets — all in plain English via your AID Helpdesk instance.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Lachlan McG",
+    "url": "https://web-production-01ecc.up.railway.app"
+  },
+  "homepage": "https://web-production-01ecc.up.railway.app",
+  "repository": "https://github.com/lachydotmcg/ad-helpdesk",
+  "license": "MIT"
+}
