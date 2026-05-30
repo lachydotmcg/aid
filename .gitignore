@@ -1,0 +1,27 @@
+# Secrets — never commit credentials or API keys
+.env
+.env.local
+*.local
+secrets.json
+*.key
+*.pem
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+
+# Node (in case tooling is added later)
+node_modules/
+npm-debug.log*
+
+# Build / packaging output
+dist/
+*.tmp

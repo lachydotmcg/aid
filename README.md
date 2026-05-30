@@ -1,5 +1,9 @@
 # AID Helpdesk — Claude Code Plugin
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.1.0-green.svg)](CHANGELOG.md)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2.svg)](https://docs.claude.com/en/docs/claude-code)
+
 Manage your Windows Active Directory from Claude Code. Unlock accounts, reset passwords, look up users, and handle support tickets — all in plain English, without leaving your terminal.
 
 Powered by [AID Helpdesk](https://web-production-01ecc.up.railway.app).
@@ -37,6 +41,7 @@ Then verify your connection:
 | `/aid:chat <message>` | Perform any AD action in plain English |
 | `/aid:tickets [status]` | List your support ticket queue |
 | `/aid:users [search]` | Look up Active Directory users |
+| `/aid:help` | Show all commands and example requests |
 
 ## Examples
 
@@ -48,11 +53,30 @@ Then verify your connection:
 /aid:chat show me all disabled accounts in the Sales OU
 /aid:tickets open
 /aid:users jane
+/aid:help
 ```
 
 ## Self-hosting
 
 If you're running your own AID Helpdesk backend, set `AID_URL` to your instance's URL instead.
+
+## Security
+
+This plugin performs privileged AD actions and handles credentials. Keep your
+`AID_API_KEY` in an environment variable (never in a commit), use an HTTPS
+`AID_URL`, and review destructive actions before confirming — they require a
+two-step confirmation handshake. See [SECURITY.md](SECURITY.md) for the full
+policy and how to report a vulnerability.
+
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the
+project layout, how to add a skill, and design principles. Please also review the
+[Code of Conduct](CODE_OF_CONDUCT.md) and the [changelog](CHANGELOG.md).
+
+## License
+
+[MIT](LICENSE) © Lachlan McG
 
 ## Links
 

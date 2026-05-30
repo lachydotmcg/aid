@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/lachydotmcg/ad-helpdesk/security/advisories/new
+    about: Please report security issues privately, not as public issues. See SECURITY.md.
+  - name: AID Helpdesk dashboard
+    url: https://web-production-01ecc.up.railway.app
+    about: Account, settings, and API key management.
