@@ -38,6 +38,7 @@ Then verify your connection:
 | Skill | Description |
 |---|---|
 | `/aid:setup` | Verify your API key and test the connection |
+| `/aid:dashboard` | At-a-glance command center: domain health, locked accounts, expired passwords, open tickets |
 | `/aid:chat <message>` | Perform any AD action in plain English |
 | `/aid:tickets [status]` | List your support ticket queue |
 | `/aid:users [search]` | Look up Active Directory users |
@@ -46,6 +47,7 @@ Then verify your connection:
 ## Examples
 
 ```
+/aid:dashboard
 /aid:chat who's locked out right now?
 /aid:chat unlock john.smith
 /aid:chat reset sarah.jones's password

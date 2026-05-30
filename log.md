@@ -4,6 +4,52 @@ A running log of changes made to this repository by the automated agent. Newest 
 
 ---
 
+## 2026-05-31 — `/aid:dashboard` command-center skill (v1.2.0)
+
+**Focus:** add one genuinely high-value, read-only feature that realises the
+"command center" idea — a single at-a-glance AD health board. No changes to any
+existing skill's behaviour or backend contract; no new endpoints invented.
+
+### New feature
+- **Added `/aid:dashboard` skill** (`skills/dashboard/SKILL.md`) — a read-only
+  status board that aggregates four already-documented read endpoints into one
+  view:
+  - `get_stats` (domain totals)
+  - `list_locked_accounts`
+  - `list_expired_passwords`
+  - `GET /api/v1/tickets?status=open`
+
+  It opens with a 🟢/🟡/🔴 health verdict, shows a compact summary table, then
+  expands only the non-empty detail sections (locked accounts, expired
+  passwords, open tickets by priority), and ends with copy-pasteable suggested
+  next actions that point back to `/aid:chat`. It is strictly read-only and
+  degrades gracefully if one call fails (shows what it got, notes what was
+  unavailable; handles `limit_reached` and HTTP 504 / agent-offline).
+
+### Wiring
+- **`skills/help/SKILL.md`** — added `/aid:dashboard` to the command table and
+  the example list.
+- **`README.md`** — added a `/aid:dashboard` row to the Skills table and an
+  example line.
+- **`.claude-plugin/plugin.json`** — bumped `version` `1.1.0` → `1.2.0`.
+- **`CHANGELOG.md`** — new `[1.2.0]` entry.
+
+### Verification
+- `plugin.json` validated as parseable JSON.
+- `skills/` now lists: chat, dashboard, help, setup, tickets, users.
+- Confirmed the new skill references **only** endpoints already documented in
+  `skills/chat/SKILL.md` and `skills/tickets/SKILL.md` — nothing invented.
+
+### Notes / decisions
+- The empty, untracked `plugins/ai-command-center/` scaffold (a leftover from an
+  earlier project mix-up — git can't track empty dirs, so it was never committed)
+  was *not* removed: the attempted cleanup was declined by the permission
+  classifier, and it's harmless. Left in place; safe for a human to delete.
+- Skills are auto-discovered, so no manifest registration was needed for the new
+  skill.
+
+---
+
 ## 2026-05-31 — `/aid:help` skill + open-source prep (v1.1.0)
 
 **Focus:** add one high-value, read-only UX skill and make the repo open-source

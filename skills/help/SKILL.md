@@ -17,6 +17,7 @@ Show the commands as a scannable table, then a short list of example requests. K
 | Command | What it does |
 | --- | --- |
 | `/aid:setup` | Verify your API key and test the connection to the backend. Run this first. |
+| `/aid:dashboard` | At-a-glance command center — domain health, locked accounts, expired passwords, open tickets. |
 | `/aid:chat <request>` | Do any Active Directory action in plain English (the main command). |
 | `/aid:users [search]` | Look up AD users by name or username and see their status. |
 | `/aid:tickets [status]` | List your support ticket queue (`open`, `closed`, or `all`). |
@@ -39,6 +40,7 @@ two-step confirmation before they run.
 ### Example requests
 
 ```
+/aid:dashboard
 /aid:chat who's locked out right now?
 /aid:chat unlock john.smith
 /aid:chat reset sarah.jones's password
